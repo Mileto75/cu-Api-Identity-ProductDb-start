@@ -8,6 +8,11 @@ using cu.ApiBAsics.Lesvoorbeeld.Avond.Core.Interfaces.Services;
 using cu.ApiBAsics.Lesvoorbeeld.Avond.Core.Services;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
+using cu.ApiBAsics.Lesvoorbeeld.Avond.Core.Entities;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
 
 namespace Pri.Drinks.Api
 {
@@ -21,6 +26,40 @@ namespace Pri.Drinks.Api
             //Db service
             builder.Services.AddDbContext<ApplicationDbContext>(options =>
             options.UseSqlServer(builder.Configuration.GetConnectionString("ProductDatabase")));
+            //register Identityservice
+            builder.Services.AddIdentity<ApplicationUser,IdentityRole>(
+                options =>
+                {
+                    options.Password.RequiredUniqueChars = 0;
+                    options.Password.RequireNonAlphanumeric = false;
+                    options.Password.RequireDigit = false;
+                    options.Password.RequireLowercase = false;
+                    options.Password.RequireUppercase = false;
+                    options.Password.RequiredLength = 4;
+                    options.SignIn.RequireConfirmedEmail = false;
+                    options.SignIn.RequireConfirmedPhoneNumber = false;
+                    options.SignIn.RequireConfirmedAccount = false;
+                }
+                )
+                .AddEntityFrameworkStores<ApplicationDbContext>();
+            //add AWT token authentication
+            builder.Services.AddAuthentication(options => 
+            {
+                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+            })
+               .AddJwtBearer(options => 
+               {
+                   options.TokenValidationParameters = new TokenValidationParameters
+                   {
+                       ValidateActor = true,
+                       ValidateAudience = true,
+                       ValidateLifetime = true,
+                       ValidIssuer = builder.Configuration["JWTConfiguration:Issuer"],
+                       ValidAudience = builder.Configuration["JWTConfiguration:Audience"],
+                       IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["JWTConfiguration:SigninKey"]))
+                   };
+               });
             //register the repository service
             builder.Services.AddScoped<IProductRepository, ProductRepository>();
             builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
@@ -46,6 +85,7 @@ namespace Pri.Drinks.Api
 
             app.UseHttpsRedirection();
             app.UseStaticFiles();
+            app.UseAuthentication();
             app.UseAuthorization();
 
 

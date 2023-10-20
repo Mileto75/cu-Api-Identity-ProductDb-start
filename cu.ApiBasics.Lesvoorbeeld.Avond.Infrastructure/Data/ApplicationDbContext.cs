@@ -1,5 +1,6 @@
 ﻿using cu.ApiBasics.Lesvoorbeeld.Avond.Infrastructure.Data.Seeding;
 using cu.ApiBAsics.Lesvoorbeeld.Avond.Core.Entities;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -9,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace cu.ApiBasics.Lesvoorbeeld.Avond.Infrastructure.Data
 {
-    public class ApplicationDbContext : DbContext
+    public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
     {
         public DbSet<Product> Products { get; set; }
         public DbSet<Category> Categories { get; set; }

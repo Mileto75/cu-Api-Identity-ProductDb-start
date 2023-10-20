@@ -58,6 +58,35 @@ namespace cu.ApiBasics.Lesvoorbeeld.Avond.Infrastructure.Data.Seeding
                         new {ProductsId=6,PropertiesId=2},
                     }
                 );
+            //identity seeding
+            IPasswordHasher<ApplicationUser> passwordHasher = new PasswordHasher<ApplicationUser>();
+            var admin = new ApplicationUser
+            {
+                Id = "1",
+                UserName = "admin@products.com",
+                NormalizedEmail = "ADMIN@PRODUCTS.COM",
+                Email = "admin@products.com",
+                NormalizedUserName = "ADMIN@PRODUCTS.COM",
+                ConcurrencyStamp = Guid.NewGuid().ToString(),
+                SecurityStamp = Guid.NewGuid().ToString(),
+                Firstname = "Bart",
+                Lastname = "Soete",
+            };
+            var user = new ApplicationUser
+            {
+                Id = "2",
+                UserName = "user@products.com",
+                NormalizedEmail = "USER@PRODUCTS.COM",
+                Email = "user@products.com",
+                NormalizedUserName = "USER@PRODUCTS.COM",
+                ConcurrencyStamp = Guid.NewGuid().ToString(),
+                SecurityStamp = Guid.NewGuid().ToString(),
+                Firstname = "Mileto",
+                Lastname = "Di Marco",
+            };
+            admin.PasswordHash = passwordHasher.HashPassword(admin, "Test123");
+            user.PasswordHash = passwordHasher.HashPassword(user, "Test123");
+            modelBuilder.Entity<ApplicationUser>().HasData( new ApplicationUser[] { admin, user } );
         }
     }
 }
