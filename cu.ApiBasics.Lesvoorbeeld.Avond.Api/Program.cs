@@ -10,9 +10,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using cu.ApiBAsics.Lesvoorbeeld.Avond.Core.Entities;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.IdentityModel.Tokens;
-using System.Text;
+
 
 namespace Pri.Drinks.Api
 {
@@ -42,24 +40,8 @@ namespace Pri.Drinks.Api
                 }
                 )
                 .AddEntityFrameworkStores<ApplicationDbContext>();
-            //add AWT token authentication
-            builder.Services.AddAuthentication(options => 
-            {
-                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-            })
-               .AddJwtBearer(options => 
-               {
-                   options.TokenValidationParameters = new TokenValidationParameters
-                   {
-                       ValidateActor = true,
-                       ValidateAudience = true,
-                       ValidateLifetime = true,
-                       ValidIssuer = builder.Configuration["JWTConfiguration:Issuer"],
-                       ValidAudience = builder.Configuration["JWTConfiguration:Audience"],
-                       IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["JWTConfiguration:SigninKey"]))
-                   };
-               });
+            //add JWT token authentication
+
             //register the repository service
             builder.Services.AddScoped<IProductRepository, ProductRepository>();
             builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();

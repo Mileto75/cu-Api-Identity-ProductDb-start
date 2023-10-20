@@ -29,28 +29,16 @@ namespace cu.ApiBasics.Lesvoorbeeld.Avond.Api.Controllers
             _configuration = configuration;
         }
 
-        [HttpPost]
+        [HttpPost("Login")]
         public async Task<IActionResult> Login(LoginRequestDto loginRequestDto)
         {
-            var result = await _signInManager.PasswordSignInAsync(loginRequestDto.Username, loginRequestDto.Password,false,false);
-            if(!result.Succeeded)
-            {
-                return Unauthorized();
-            }
-            var user = await _userManager.FindByNameAsync(loginRequestDto.Username);
-            var claims = await _userManager.GetClaimsAsync(user);
-            var expirationDays = _configuration.GetValue<int>("JWTConfiguration:TokenExpiration");
-            var signinKey = Encoding.UTF8.GetBytes(_configuration.GetValue<string>("JWTConfiguration:SigninKey"));
-            var token = new JwtSecurityToken(
-                issuer: _configuration.GetValue<string>("JWTConfiguration:Issuer"),
-                audience: _configuration.GetValue<string>("JWTConfiguration:Audience"),
-                claims: claims,
-                expires: DateTime.Now.AddDays(expirationDays),
-                notBefore: DateTime.Now,
-                signingCredentials: new SigningCredentials(new SymmetricSecurityKey(signinKey),SecurityAlgorithms.HmacSha256)
-                );
-            var serializedToken = new JwtSecurityTokenHandler().WriteToken(token);
-            return Ok(serializedToken);
+            return Ok();
+        }
+
+        [HttpPost("Register")]
+        public async Task<IActionResult> Register(RegisterRequestDto registerRequestDto)
+        {
+            return Ok();
         }
     }
 }
